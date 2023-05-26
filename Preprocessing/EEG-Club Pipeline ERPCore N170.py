@@ -28,6 +28,8 @@ if 'thandrillon' in os.getcwd():
     path_data='/Users/thandrillon/Data/ERPCore/ERPCore_N170/'
 elif 'degrave' in os.getcwd():
     path_data='your_path'
+else:
+    path_data='your_path'
 
 if os.path.exists(path_data+"reports")==False:
     os.makedirs(path_data+"reports")
