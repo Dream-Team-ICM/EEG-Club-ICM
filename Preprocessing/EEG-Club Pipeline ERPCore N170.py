@@ -47,9 +47,9 @@ report_ICA = mne.Report(title='ICA')
 for file in files:
 
     # [1] LOAD RAW DATA
-    file_name=file.split('/')[-1]
+    file_name=file.split(os.sep)[-1]
     sub_ID=file_name.split('_')[0]
-    report_prefix=path_data+"reports/"+sub_ID+"_"
+    report_prefix=path_data+"reports"+os.sep + sub_ID+"_"
     raw = mne.io.read_raw_eeglab(file, preload=True)
     raw_eeg = raw.copy().drop_channels(['HEOG_left','HEOG_right','VEOG_lower'])
     
@@ -97,7 +97,7 @@ for file in files:
                         tmin=-0.2, tmax=1.2, reject=None, preload=True)
     report.add_epochs(epochs=epochs, title='Epochs from "epochs"')
     savename = "e_" + sub_ID + ".fif"
-    epochs.save(path_data+"intermediary/"+savename, overwrite=True)
+    epochs.save(os.path.join(path_data,"intermediary",savename), overwrite=True)
     
     # [6] AUTOREJECT
     n_interpolates = np.array([1, 4, 32])
@@ -109,7 +109,7 @@ for file in files:
     epochs_clean.set_eeg_reference("average")
 
     savename = "ce_" + sub_ID + ".fif"
-    epochs_clean.save(path_data+"intermediary/"+savename, overwrite=True)
+    epochs_clean.save(os.path.join(path_data,"intermediary",savename), overwrite=True)
     
     fig = reject_log.plot(orientation = 'horizontal', show=False)
 
@@ -133,7 +133,7 @@ for file in files:
     ica = mne.preprocessing.ICA(n_components=15, max_iter="auto", random_state=97,method='infomax', fit_params=dict(extended=True))
     ica.fit(ica_epochs_clean)
     savename = "ica_ce_" + sub_ID + ".fif"
-    ica.save(path_data+"intermediary/"+savename, overwrite=True)
+    ica.save(os.path.join(path_data,"intermediary",savename), overwrite=True)
     
     # ICA rejection
     ica_classification=label_components(ica_epochs_clean, ica, method='iclabel')
@@ -187,7 +187,7 @@ for file in files:
     conditions=[str(face_id),str(car_id)];
     evoked_clean_perCond = {c:epochs_clean_ica[c].average() for c in conditions}
     savename = "erp_ce_" + sub_ID + ".fif"
-    mne.write_evokeds(path_data+"intermediary/"+savename, 
+    mne.write_evokeds(os.path.join(path_data,"intermediary",savename), 
                       list(evoked_clean_perCond.values()), overwrite=True
                      )
     report.add_evokeds(
@@ -237,7 +237,7 @@ for file in files:
           caption="Face vs Car across all Elec",
       )
     savename = "cont_ce_" + sub_ID + ".fif"
-    face_ica_clean_vis.save(path_data+"intermediary/"+savename, overwrite=True)
+    face_ica_clean_vis.save(os.path.join(path_data,"intermediary",savename), overwrite=True)
     
 
     report_ERP.add_figure(
@@ -258,15 +258,15 @@ for file in files:
     
     report.save(report_prefix+"pipeline.html", overwrite=True, open_browser=False)
     
-    report_Event.save(path_data+"reports/"+"Events.html", overwrite=True, open_browser=False)
-    report_AR.save(path_data+"reports/"+"AutoRej.html", overwrite=True, open_browser=False)
-    report_ERP.save(path_data+"reports/"+"ERP.html", overwrite=True, open_browser=False)
-    report_ICA.save(path_data+"reports/"+"ICA.html", overwrite=True, open_browser=False)
+    report_Event.save(os.path.join(path_data,"reports","Events.html"), overwrite=True, open_browser=False)
+    report_AR.save(os.path.join(path_data,"reports","AutoRej.html"), overwrite=True, open_browser=False)
+    report_ERP.save(os.path.join(path_data,"reports","ERP.html"), overwrite=True, open_browser=False)
+    report_ICA.save(os.path.join(path_data,"reports","ICA.html"), overwrite=True, open_browser=False)
     
     plt.close('all')
     
 # %% GET ERPs across subjects
-evokeds_files = glob.glob(path_data+"intermediary/" + '/erp_ce_*.fif')
+evokeds_files = glob.glob(os.path.join(path_data,"intermediary" ,'erp_ce_*.fif'))
 evokeds = {} #create an empty dict
 conditions = ['1001','1002']
 # #convert list of evoked in a dict (w/ diff conditions if needed)
