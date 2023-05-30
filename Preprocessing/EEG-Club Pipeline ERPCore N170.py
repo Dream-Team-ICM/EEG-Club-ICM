@@ -39,7 +39,7 @@ if os.path.exists(path_data+"intermediary")==False:
 files = glob.glob(path_data + '*.set')
 
 # %% LOAD, FILTER, CLEAN
-report_Event = mne.Report(title='Auto Reject')
+report_Event = mne.Report(title='AutEvent')
 report_AR = mne.Report(title='Auto Reject')
 report_ERP = mne.Report(title='ERP')
 report_ICA = mne.Report(title='ICA')
