@@ -146,8 +146,13 @@ for file in files:
         caption_str=caption_str+'ICA'+str(idx)+': '+label+'; '
         
     print(f"Excluding these ICA components: {exclude_idx}")
-    epochs_clean_ica=ica.apply(epochs_clean, exclude=exclude_idx)
+    epochs_clean_ica=epochs_clean.copy()
+    epochs_clean_ica=ica.apply(epochs_clean_ica, exclude=exclude_idx)
     epochs_clean_ica.set_eeg_reference("average")
+    
+    raw_eeg_ica=raw_eeg.copy()
+    raw_eeg_ica=ica.apply(raw_eeg_ica, exclude=exclude_idx)
+    raw_eeg_ica.set_eeg_reference("average")
 
     ica_fig=ica.plot_sources(ica_epochs_clean, show_scrollbars=True, show=False)
     report.add_ica(
@@ -279,7 +284,7 @@ evokeds # We can see that he matched the conditions by treating each as if it wa
 
 # "Plot averaged ERP on all subj"
 ERP_mean = mne.viz.plot_compare_evokeds(evokeds,
-                             picks='PO8', show_sensors='upper right',
+                             picks='Oz', show_sensors='upper right',
                              title='Averaged ERP all subjects',
                             )
 plt.show()
@@ -292,6 +297,20 @@ ERP_gfp = mne.viz.plot_compare_evokeds(evokeds,
                             )
 plt.show()
 
+# Compute the grand average (optional, but usually done before subtraction)
+evoked_cond1 = mne.grand_average(evokeds[conditions[0]])
+evoked_cond2 = mne.grand_average(evokeds[conditions[1]])
+
+# Compute the difference: condition1 - condition2
+evoked_diff = mne.combine_evoked([evoked_cond1, evoked_cond2], weights=[1, -1])
+evoked_diffs = [
+    mne.combine_evoked([cond1, cond2], weights=[1, -1])
+    for cond1, cond2 in zip(evokeds[conditions[0]], evokeds[conditions[1]])
+]
+diff_dict = {"1001 - 1002": evoked_diffs}
+# Plot with confidence interval at channel P08
+mne.viz.plot_compare_evokeds(diff_dict, picks="Oz", ci=True, show=True)
+plt.title("Difference Wave at P08 with Confidence Interval")
 
 # evokeds_files = glob.glob(path_data+"intermediary/" + '/cont_ce_*.fif')
 # evokeds_diff = {} #create an empty dict

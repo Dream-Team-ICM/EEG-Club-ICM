@@ -15,8 +15,8 @@ import mne
 
 
 # Example 1: Raw EGI files
-egi_data_raw_file = os.path.join('/Users/thandrillon/Downloads',
-                                    'Ex_EDF.edf')
+egi_data_raw_file = os.path.join('/Users/thandrillon/Downloads/sieste_Ines',
+                                    'sieste.edf')
 raw=mne.io.read_raw_edf(egi_data_raw_file)
 print(raw)
 
@@ -47,14 +47,14 @@ print(raw.get_channel_types())
 
 
 # selecting data 
-channel_names = ['Fp1-A2', 'C3-A2', 'O1-A2']
+channel_names = ['F3-A2', 'C3-A2', 'O1-A2']
 eeg_and_eog = raw.copy().pick(channel_names)
 
 # quick filtering
 freqs = (50, 100)
 eeg_and_eog.load_data()
 eeg_and_eog_notch = eeg_and_eog.copy().notch_filter(freqs=freqs)
-eeg_and_eog_bp = eeg_and_eog_notch.copy().filter(l_freq=0.1, h_freq=30)
+eeg_and_eog_bp = eeg_and_eog_notch.copy().filter(l_freq=0.5, h_freq=30)
 
 fig_time =eeg_and_eog_bp.plot(scalings=dict(eeg=150e-6), duration=20, start=5230)
 
@@ -65,7 +65,7 @@ fig_time2 =eeg_and_eog_bp2.plot(scalings=dict(eeg=150e-6), duration=20, start=52
 eeg_and_eog_bp3 = eeg_and_eog_notch.copy().filter(l_freq=0.1, h_freq=15)
 fig_time3 =eeg_and_eog_bp3.plot(scalings=dict(eeg=150e-6), duration=20, start=5230)
 
-eeg_and_eog_bp3.set_eeg_reference(ref_channels=['Fp1-A2'])
+eeg_and_eog_bp3.set_eeg_reference(ref_channels=['F3-A2'])
 fig_time3 =eeg_and_eog_bp3.plot(scalings=dict(eeg=150e-6), duration=20, start=5230)
 
 # In[5]:
@@ -73,7 +73,7 @@ fig_time3 =eeg_and_eog_bp3.plot(scalings=dict(eeg=150e-6), duration=20, start=52
 egi_data_raw_file2 = os.path.join('/Users/thandrillon/Downloads',
                                        'Ex_EDF_Clipped.edf')
 raw2=mne.io.read_raw_edf(egi_data_raw_file2)
-channel_names = ['Fp1-A2', 'C3-A2', 'O1-A2', 'EOG D','EOG G']
+channel_names = ['F3-A2', 'C3-A2', 'O1-A2', 'EOG D','EOG G']
 eeg_and_eog2 = raw2.copy().pick(channel_names)
 
 # quick filtering
